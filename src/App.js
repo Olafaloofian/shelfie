@@ -1,29 +1,45 @@
 import React, { Component } from 'react';
 import axios from "axios"
 import './App.css';
+import Dashboard from "./components/Dashboard"
+import Form from "./components/Form"
+import Header from "./components/Header"
+import Product from "./components/Product"
+
 
 class App extends Component {
   constructor() {
-    this.setState= {
-      state= ""
+    super();
+
+    this.state= {
+      inventoryList: [],
+      selectedProduct: ""
     }
+    this.setSelected = this.setSelected.bind(this)
   }
-  componentDidMount() {
-    axios.get("/api/test").then(res =>  {
+
+  componentDidMount = () => {
+    console.log('Main component mounted!')
+    axios.get("/api/inventory").then(res => {
+      console.log("---------Internal API Response", res)
       this.setState({
-        state: res.data
+        inventoryList: res.data
       })
     })
- }  render() {
+  }
+
+  setSelected = (data) => {
+    this.setState({
+      selectedProduct: data
+    })
+  }
+
+ render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">{this.state.state}</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <Dashboard items={this.state.inventoryList} get={this.componentDidMount}><Product setSelected={this.setSelected}/></Dashboard>
+        <Header />
+        <div><Form get={this.componentDidMount} selected={this.state.selectedProduct}/></div>
       </div>
     );
   }
